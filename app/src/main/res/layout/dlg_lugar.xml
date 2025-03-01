@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/clLugar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="380dp"
+    android:layout_height="400dp"
+    android:padding="20dp"
+    android:layout_gravity="center|bottom"
+    android:background="@color/nero"
+    >
+
+    <ImageView
+        android:id="@+id/ivCerrar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_close"
+        app:layout_constraintTop_toTopOf="@id/clLugar"
+        app:layout_constraintEnd_toEndOf="@id/clLugar"
+        android:contentDescription="Boton de cerrar"
+    />
+
+    <ImageView
+        android:id="@+id/ivImagen"
+        android:layout_width="290dp"
+        android:layout_height="120dp"
+        app:layout_constraintStart_toStartOf="@id/clLugar"
+        app:layout_constraintTop_toTopOf="@id/clLugar"
+        android:contentDescription="Foto"
+    />
+
+    <TextView
+        android:id="@+id/tvTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="ssssssssssss"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/clLugar"
+        app:layout_constraintTop_toBottomOf="@id/ivImagen"
+    />
+
+    <TextView
+        android:id="@+id/tvLatitud"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:text="Latitud: "
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/clLugar"
+        app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+    />
+
+    <TextView
+        android:id="@+id/tvLongitud"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:text="Longitud: "
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+        app:layout_constraintStart_toEndOf="@id/tvLatitud"
+    />
+
+    <TextView
+        android:id="@+id/tvDescripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Descripciion "
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/clLugar"
+        app:layout_constraintTop_toBottomOf="@id/tvLatitud"
+    />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
