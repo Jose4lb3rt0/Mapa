@@ -3,6 +3,7 @@ package com.jadse.mapandroid.ui;
 import static java.util.stream.Collectors.toList;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -18,9 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -91,6 +94,13 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
         dialog = new Dialog(context);
         Objects.requireNonNull( dialog.getWindow() ).setBackgroundDrawable( new ColorDrawable( Color.TRANSPARENT ) );
         dialog.setContentView(R.layout.dlg_lugar);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setGravity(Gravity.BOTTOM);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
         imageViewImagen = dialog.findViewById( R.id.ivImagen);
         textViewTitulo = dialog.findViewById( R.id.tvTitulo );
         textViewDescripcion = dialog.findViewById( R.id.tvDescripcion );
@@ -146,6 +156,7 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
 
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
 //        if (marker.getTitle().equals("CFP Luis Cáceres Graziani") ) {}
@@ -163,8 +174,8 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
                 textViewTitulo.setText(lugares.get(posicion).getTítulo());
                 textViewDescripcion.setText(lugares.get(posicion).getDescripcion());
                 dialog.show();
-                textViewLatitud.setText(String.valueOf(lugares.get(posicion).getLatitud()));
-                textViewLongitud.setText(String.valueOf(lugares.get(posicion).getLongitud()));
+                textViewLatitud.setText("Latitud: " + String.valueOf(lugares.get(posicion).getLatitud()));
+                textViewLongitud.setText("Longitud: " + String.valueOf(lugares.get(posicion).getLongitud()));
             }
 
             //marker.gettitle (buscar el nombre exacto en la lista arraylist<lugares>, encontrar position) <-----
