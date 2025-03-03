@@ -1,7 +1,10 @@
 package com.jadse.mapandroid.model;
 
+import android.graphics.drawable.Drawable;
+
 public class Lugar {
-    int id, imagen;
+    int id;
+    int imagen;
     String título, descripcion;
     double latitud, longitud;
 

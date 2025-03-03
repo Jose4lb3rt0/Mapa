@@ -24,7 +24,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.jadse.mapandroid.R;
+import com.jadse.mapandroid.dao.LugarDAO;
 import com.jadse.mapandroid.databinding.FragmentHomeBinding;
 import com.jadse.mapandroid.model.Lugar;
 
@@ -57,14 +61,15 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
     NavController navController;
     GoogleMap googleMap;
     MarkerOptions markerOptions01;
-
-    //Sacar las variables aqui
+    String apikey;
 
     List<Lugar> lugares = new ArrayList<Lugar>();
     Dialog dialog;
 
     TextView textViewTitulo, textViewDescripcion, textViewLongitud, textViewLatitud;
     ImageView imageViewImagen, imageViewCerrar;
+
+    Spinner spinnerLugares;
 
     @Override
     public void onDestroyView() {
@@ -73,6 +78,13 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        /*try {
+            apikey = context.getPackageManager().getApplicationInfo(
+                    context.getPackageName(), PackageManager.GET_META_DATA
+            ).metaData.getString("com.google.android.geo.API_KEY");
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }*/
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         view = binding.getRoot();
         return view;
@@ -83,13 +95,6 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
         super.onViewCreated(view, savedInstanceState);
         context = getContext();
         navController = Navigation.findNavController(view);
-
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fcvMap);
-        if ( supportMapFragment != null ) supportMapFragment.getMapAsync(this);
-
-        //crear el dialog aqui y setcontentview con imagen titulo descripcion DIALOG NEW dialog
-        //dialog.setcontentview
-        //bnombre nombre = dlg.findView(r.id.xxxxx)
 
         dialog = new Dialog(context);
         Objects.requireNonNull( dialog.getWindow() ).setBackgroundDrawable( new ColorDrawable( Color.TRANSPARENT ) );
@@ -107,50 +112,89 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
         textViewLongitud = dialog.findViewById( R.id.tvLongitud );
         textViewLatitud = dialog.findViewById( R.id.tvLatitud );
         imageViewCerrar = dialog.findViewById(R.id.ivCerrar);
+        spinnerLugares = view.findViewById(R.id.spLugares);
         imageViewCerrar.setOnClickListener( v-> dialog.dismiss() );
+
+        // Mapa
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fcvMap);
+        if ( supportMapFragment != null )
+            supportMapFragment.getMapAsync(this);
+
+        if (lugares.isEmpty()) {
+            Lugar destino1 = new Lugar(1, R.drawable.jpg_huacachina, "Huacachina", "Huacachina es un oasis desértico y una pequeña villa justo al oeste de la ciudad de Ica, en el suroeste de Perú.",  -14.0875, -75.763333333333);
+            Lugar destino2 = new Lugar(2, R.drawable.webp_playa_de_la_mina, "Playa La Mina Pisco", " Llegada a Playa La Mina, un lugar precioso de agua cristalina y limpia, podrás disfrutar de esta linda playa junto a tus amigos y familiares.",  -13.910546, -76.317833);
+            Lugar destino3 = new Lugar(3, R.drawable.jpg_playa_roja, "Playa Roja", "Desierto con playa roja por los minerales volcánicos, fósiles marinos y avistamiento de focas y pingüinos.", -13.892518, -76.301654);
+            Lugar destino4 = new Lugar(3, R.drawable.jpg_paracas_e_islas_ballestas, "Paracas Paseos", "Este es el clásico muelle de pesca y embarque de turistas hacia las islas ballestas.", -13.832764, -76.248503);
+            Lugar destino5 = new Lugar(3, R.drawable.jpg_desierto_ica, "Desierto de Ica", "El desierto de Ica es una región peruana con un clima cálido y seco, dunas, oasis y pampas. Se encuentra a unos 300 kilómetros al sur de Lima. ", -14.095757, -75.771284);
+            lugares.add(destino1);
+            lugares.add(destino2);
+            lugares.add(destino3);
+            lugares.add(destino4);
+            lugares.add(destino5);
+        }
+
+        //Adaptador y evento de selección de spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                lugares.stream().map(Lugar::getTítulo).collect(Collectors.toList()));
+        spinnerLugares.setAdapter(adapter);
+
+        spinnerLugares.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Lugar lugarSeleccionado = lugares.get(position);
+                moverCamara(lugarSeleccionado);
+            }
+
+            @Override public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+    }
+
+    private void moverCamara(Lugar lugarSeleccionado) {
+        LatLng gps = new LatLng(lugarSeleccionado.getLatitud(), lugarSeleccionado.getLongitud());
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 15));
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
         if ( ActivityCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_DENIED )
             if ( !ActivityCompat.shouldShowRequestPermissionRationale( requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION ) )
                 ActivityCompat.requestPermissions( requireActivity(), new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_PERMISSION_ACCESS_FINE_LOCATION );
 
-        this.googleMap = googleMap;
         this.googleMap.setOnMarkerClickListener(this);
         this.googleMap.setOnMapClickListener(this);
-        this.googleMap.clear();
         this.googleMap.setMyLocationEnabled(true);
         this.googleMap.setOnMyLocationClickListener(this);
         this.googleMap.getUiSettings().setMyLocationButtonEnabled(true);
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
         this.googleMap.getUiSettings().setZoomGesturesEnabled(true);
+
         verUbicacion();
     }
 
     private void verUbicacion() {
-        Lugar Ciudad1 = new Lugar(1, 23, "Machu Picchu", "El sitio mas turístico de cusco", -13.163220, -72.545226);
-        Lugar Ciudad2 = new Lugar(2, 24, "Huayna Picchu", "El sitio mas turístico de cusco", -13.156220, -72.546448);
-        Lugar Ciudad3 = new Lugar(3, 25, "Camino peatonal a Machu Picchu", "El sitio mas turístico de cusco", -13.165897, -72.542732);
-        lugares.add(Ciudad1);
-        lugares.add(Ciudad2);
-        lugares.add(Ciudad3);
+        googleMap.clear();
+        /*LugarDAO lugarDAO = new LugarDAO(context);
+        lugarDAO.open();
+        lugares = lugarDAO.obtenerLugares();
+        lugarDAO.close();*/
 
         LatLng gps = new LatLng(0,0);
         for ( Lugar lugar : lugares ) {
             gps = new LatLng(lugar.getLatitud(), lugar.getLongitud());
-//            googleMap.clear();
             googleMap.addMarker( new MarkerOptions().position(gps).title(lugar.getTítulo()) );
         }
-        System.out.println(Arrays.deepToString(lugares.toArray()));
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(gps, 25) );
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(gps, 15) );
     }
 
     @Override
     public void onMapClick(@NonNull LatLng latLng) {
 
     }
-    //Clase lugar y hacer arraylist, crear 5 puntos y hacer foreach en verUbicacion, crear variable gps, lugar.getLatitude y getLngt., crear gps en 0,0
+
     @Override
     public void onMyLocationClick(@NonNull Location location) {
 
@@ -159,9 +203,6 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
     @SuppressLint("SetTextI18n")
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-//        if (marker.getTitle().equals("CFP Luis Cáceres Graziani") ) {}
-//            Snackbar.make(view, marker.getTitle(), Snackbar.LENGTH_LONG).show();
-
             int posicion = -1;
             for (int i = 0; i < lugares.size(); i++) {
                 if (lugares.get(i).getTítulo().equals(marker.getTitle())) {
@@ -171,20 +212,15 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
             }
 
             if (posicion != -1){
+                imageViewImagen.setImageResource(lugares.get(posicion).getImagen());
                 textViewTitulo.setText(lugares.get(posicion).getTítulo());
                 textViewDescripcion.setText(lugares.get(posicion).getDescripcion());
-                dialog.show();
                 textViewLatitud.setText("Latitud: " + String.valueOf(lugares.get(posicion).getLatitud()));
                 textViewLongitud.setText("Longitud: " + String.valueOf(lugares.get(posicion).getLongitud()));
+                dialog.show();
             }
-
-            //marker.gettitle (buscar el nombre exacto en la lista arraylist<lugares>, encontrar position) <-----
-            //tvNombrese.ttext( lugares.get(position).getNombre)
-            //Detalle = lugares.get(position).getNombre
-            //iv.setImageResource lugares.get(position).getIamgen
-            //Dialog-show
-
 
         return false;
     }
+
 }
