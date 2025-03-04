@@ -39,7 +39,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.jadse.mapandroid.R;
-import com.jadse.mapandroid.dao.LugarDAO;
 import com.jadse.mapandroid.databinding.FragmentHomeBinding;
 import com.jadse.mapandroid.model.Lugar;
 
@@ -112,7 +111,7 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
         textViewLongitud = dialog.findViewById( R.id.tvLongitud );
         textViewLatitud = dialog.findViewById( R.id.tvLatitud );
         imageViewCerrar = dialog.findViewById(R.id.ivCerrar);
-        spinnerLugares = view.findViewById(R.id.spLugares);
+//        spinnerLugares = view.findViewById(R.id.spLugares);
         imageViewCerrar.setOnClickListener( v-> dialog.dismiss() );
 
         // Mapa
@@ -134,7 +133,7 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
         }
 
         //Adaptador y evento de selección de spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        /*ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 lugares.stream().map(Lugar::getTítulo).collect(Collectors.toList()));
@@ -148,7 +147,7 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
             }
 
             @Override public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
+        });*/
     }
 
     private void moverCamara(Lugar lugarSeleccionado) {
@@ -177,10 +176,6 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
 
     private void verUbicacion() {
         googleMap.clear();
-        /*LugarDAO lugarDAO = new LugarDAO(context);
-        lugarDAO.open();
-        lugares = lugarDAO.obtenerLugares();
-        lugarDAO.close();*/
 
         LatLng gps = new LatLng(0,0);
         for ( Lugar lugar : lugares ) {

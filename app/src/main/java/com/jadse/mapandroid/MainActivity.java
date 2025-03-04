@@ -15,7 +15,8 @@ import com.jadse.mapandroid.databinding.ActivityMainBinding;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-
+    public static String URL_IMAGE = "https://oaemdl.es/images/senati/";
+    public static String URL_API = "";
     private ActivityMainBinding binding;
 
     @Override
