@@ -38,9 +38,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.jadse.mapandroid.MainActivity;
 import com.jadse.mapandroid.R;
 import com.jadse.mapandroid.databinding.FragmentHomeBinding;
 import com.jadse.mapandroid.model.Lugar;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -120,11 +122,11 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
             supportMapFragment.getMapAsync(this);
 
         if (lugares.isEmpty()) {
-            Lugar destino1 = new Lugar(1, R.drawable.jpg_huacachina, "Huacachina", "Huacachina es un oasis desértico y una pequeña villa justo al oeste de la ciudad de Ica, en el suroeste de Perú.",  -14.0875, -75.763333333333);
-            Lugar destino2 = new Lugar(2, R.drawable.webp_playa_de_la_mina, "Playa La Mina Pisco", " Llegada a Playa La Mina, un lugar precioso de agua cristalina y limpia, podrás disfrutar de esta linda playa junto a tus amigos y familiares.",  -13.910546, -76.317833);
-            Lugar destino3 = new Lugar(3, R.drawable.jpg_playa_roja, "Playa Roja", "Desierto con playa roja por los minerales volcánicos, fósiles marinos y avistamiento de focas y pingüinos.", -13.892518, -76.301654);
-            Lugar destino4 = new Lugar(3, R.drawable.jpg_paracas_e_islas_ballestas, "Paracas Paseos", "Este es el clásico muelle de pesca y embarque de turistas hacia las islas ballestas.", -13.832764, -76.248503);
-            Lugar destino5 = new Lugar(3, R.drawable.jpg_desierto_ica, "Desierto de Ica", "El desierto de Ica es una región peruana con un clima cálido y seco, dunas, oasis y pampas. Se encuentra a unos 300 kilómetros al sur de Lima. ", -14.095757, -75.771284);
+            Lugar destino1 = new Lugar(1, "huacachina", "Huacachina", "Huacachina es un oasis desértico y una pequeña villa justo al oeste de la ciudad de Ica, en el suroeste de Perú.",  -14.0875, -75.763333333333);
+            Lugar destino2 = new Lugar(2, "playa_mina_pisco", "Playa La Mina Pisco", " Llegada a Playa La Mina, un lugar precioso de agua cristalina y limpia, podrás disfrutar de esta linda playa junto a tus amigos y familiares.",  -13.910546, -76.317833);
+            Lugar destino3 = new Lugar(3, "playa_roja", "Playa Roja", "Desierto con playa roja por los minerales volcánicos, fósiles marinos y avistamiento de focas y pingüinos.", -13.892518, -76.301654);
+            Lugar destino4 = new Lugar(3, "paracas", "Paracas Paseos", "Este es el clásico muelle de pesca y embarque de turistas hacia las islas ballestas.", -13.832764, -76.248503);
+            Lugar destino5 = new Lugar(3, "desierto_ica", "Desierto de Ica", "El desierto de Ica es una región peruana con un clima cálido y seco, dunas, oasis y pampas. Se encuentra a unos 300 kilómetros al sur de Lima. ", -14.095757, -75.771284);
             lugares.add(destino1);
             lugares.add(destino2);
             lugares.add(destino3);
@@ -207,11 +209,20 @@ public class Home extends Fragment implements OnMapReadyCallback, GoogleMap.OnMa
             }
 
             if (posicion != -1){
-                imageViewImagen.setImageResource(lugares.get(posicion).getImagen());
-                textViewTitulo.setText(lugares.get(posicion).getTítulo());
-                textViewDescripcion.setText(lugares.get(posicion).getDescripcion());
-                textViewLatitud.setText("Latitud: " + String.valueOf(lugares.get(posicion).getLatitud()));
-                textViewLongitud.setText("Longitud: " + String.valueOf(lugares.get(posicion).getLongitud()));
+                Lugar lugar = lugares.get(posicion);
+                String imageUrl = MainActivity.URL_IMAGE + lugar.getImagen() + ".jpeg";
+
+                Picasso.get()
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_none)
+                        .error(R.drawable.ic_none)
+                        .into(imageViewImagen);
+
+//                imageViewImagen.setImageResource( lugares.get(posicion).getImagen());
+                textViewTitulo.setText(lugar.getTítulo());
+                textViewDescripcion.setText(lugar.getDescripcion());
+                textViewLatitud.setText("Latitud: " + String.valueOf(lugar.getLatitud()));
+                textViewLongitud.setText("Longitud: " + String.valueOf(lugar.getLongitud()));
                 dialog.show();
             }
 

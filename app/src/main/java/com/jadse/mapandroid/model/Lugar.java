@@ -4,11 +4,11 @@ import android.graphics.drawable.Drawable;
 
 public class Lugar {
     int id;
-    int imagen;
+    String imagen;
     String título, descripcion;
     double latitud, longitud;
 
-    public Lugar(int id, int imagen, String título, String descripcion, double latitud, double longitud) {
+    public Lugar(int id, String imagen, String título, String descripcion, double latitud, double longitud) {
         this.id = id;
         this.imagen = imagen;
         this.título = título;
@@ -25,11 +25,11 @@ public class Lugar {
         this.id = id;
     }
 
-    public int getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(int imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
